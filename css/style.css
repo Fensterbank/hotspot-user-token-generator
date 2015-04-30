@@ -1,0 +1,17 @@
+body {
+    padding-top: 50px;
+}
+
+.content {
+    padding: 40px 15px;
+    text-align: center;
+}
+
+.glyphicon-fire {
+    cursor: pointer;
+    user-select: none;
+}
+
+#inputPassword {
+    font-family: monospace;
+}

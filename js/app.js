@@ -26,6 +26,7 @@
 (function () {
   var btnClear, btnGo, btnPassword;
   var tbName, tbUsername, tbPassword;
+  var pdfConfig;
 
   function ready(fn) {
     if (document.readyState != 'loading'){
@@ -33,6 +34,26 @@
     } else {
       document.addEventListener('DOMContentLoaded', fn);
     }
+  }
+
+  function loadConfig() {
+    var request = new XMLHttpRequest();
+    request.open('GET', 'config.stbonifatius.json', true);
+    request.overrideMimeType("application/json");
+
+    request.onload = function() {
+      try {
+        pdfConfig = JSON.parse(this.response);
+      } catch (e) {
+        console.log('Error loading config: ' + e.message);
+      }
+      console.log(pdfConfig);
+    };
+
+    request.onerror = function() {
+    };
+
+    request.send();
   }
 
   function generatePassword(length) {
@@ -47,11 +68,45 @@
     for (i = 0; i < length+1; i++) {
       pwd += chars.charAt(Math.floor(Math.random()*chars.length));
     }
+    loadConfig();
     return pwd;
   }
 
   function makePDF() {
-
+    var docDefinition = {
+      content: [
+        { text: 'Datum: 10.12.2014', alignment: 'right' },
+        { text: pdfConfig.Title, style: 'header' },
+        { text: pdfConfig.Introdution },
+        {
+          image: 'sampleImage.jpg',
+          width: 150
+        },
+        {
+          style: 'credentials',
+          table: {
+            body: [
+              ['Name', tbName.value],
+              ['Benutzername', tbUsername.value],
+              ['Passwort', tbPassword.value]
+            ]
+          }
+        },
+        { text: pdfConfig.Addon },
+        { text: pdfConfig.Footer }
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 0, 0, 10]
+        },
+        credentials: {
+          margin: [0, 5, 0, 15]
+        }
+      }
+    };
+    pdfMake.createPdf(docDefinition).open();
   }
 
   function clearForm() {
@@ -75,5 +130,7 @@
     btnClear.addEventListener('click', clearForm);
     btnGo.addEventListener('click', makePDF);
     btnPassword.addEventListener('click', randomPassword);
+
+    loadConfig();
   });
 })();

@@ -7,7 +7,7 @@ body {
     text-align: center;
 }
 
-.glyphicon-fire {
+.input-group-addon {
     cursor: pointer;
     user-select: none;
 }

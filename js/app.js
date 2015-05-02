@@ -1,5 +1,5 @@
 /*
- hotspot-user-token-generator v0.1
+ hotspot-user-token-generator v1.0
 
  The MIT License (MIT)
 
@@ -38,7 +38,7 @@
 
   function loadConfig() {
     var request = new XMLHttpRequest();
-    request.open('GET', 'config.stbonifatius.json', true);
+    request.open('GET', 'config.json', true);
     request.overrideMimeType("application/json");
 
     request.onload = function() {
@@ -47,7 +47,6 @@
       } catch (e) {
         console.log('Error loading config: ' + e.message);
       }
-      console.log(pdfConfig);
     };
 
     request.onerror = function() {
@@ -75,35 +74,46 @@
   function makePDF() {
     var docDefinition = {
       content: [
-        { text: 'Datum: 10.12.2014', alignment: 'right' },
-        { text: pdfConfig.Title, style: 'header' },
-        { text: pdfConfig.Introdution },
         {
-          image: 'sampleImage.jpg',
-          width: 150
+          columns: [
+            {
+              image: pdfConfig.Logo,
+              width: 100
+            },
+            { text: pdfConfig.Title, style: 'header' },
+            { text: 'Datum: ' + new Date().toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric'}), alignment: 'right' }
+          ],
+          margin: [0, 0, 0, 40]
+        },
+        { text: pdfConfig.Introdution,
+          margin: [0, 80, 0, 20]
         },
         {
-          style: 'credentials',
           table: {
+            widths: [ 120, 200 ],
             body: [
               ['Name', tbName.value],
               ['Benutzername', tbUsername.value],
               ['Passwort', tbPassword.value]
             ]
-          }
+          },
+          margin: [0, 5, 0, 40]
         },
-        { text: pdfConfig.Addon },
-        { text: pdfConfig.Footer }
+        {
+          text: pdfConfig.Addon
+        }
       ],
       styles: {
         header: {
-          fontSize: 18,
+          fontSize: 15,
           bold: true,
-          margin: [0, 0, 0, 10]
-        },
-        credentials: {
-          margin: [0, 5, 0, 15]
+          margin: [0, 0, 0, 13]
         }
+      },
+      footer: {
+        text: pdfConfig.Footer,
+        fontSize: 8,
+        alignment: 'center'
       }
     };
     pdfMake.createPdf(docDefinition).open();
@@ -122,7 +132,7 @@
   ready(function () {
     btnClear = document.querySelector('.btn-danger');
     btnGo = document.querySelector('.btn-primary');
-    btnPassword = document.querySelector('.glyphicon-fire');
+    btnPassword = document.querySelector('.input-group-addon');
     tbName = document.getElementById('inputName');
     tbUsername = document.getElementById('inputUsername');
     tbPassword = document.getElementById('inputPassword');

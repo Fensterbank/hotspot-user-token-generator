@@ -67,7 +67,6 @@
     for (i = 0; i < length+1; i++) {
       pwd += chars.charAt(Math.floor(Math.random()*chars.length));
     }
-    loadConfig();
     return pwd;
   }
 
